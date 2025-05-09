@@ -1,46 +1,42 @@
 <?php
-$host = 'sql312.infinityfree.com';
-$username = 'if0_38929999';  
-$password = 'faithfaith19';      
-$dbname = 'if0_38929999_faiths';
-
-$conn = new mysqli($host, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
 session_start();
-$message = '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $identifier = $_POST['identifier']; // can be email or username
-    $pass = $_POST['password'];
+$username = "";
+$error = "";
 
-// Fetch user from database using email or username
-$stmt = $conn->prepare("SELECT id, password FROM users WHERE email = ? OR username = ?");
-$stmt->bind_param("ss", $identifier, $identifier);
-$stmt->execute();
-$stmt->store_result();
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
 
-if ($stmt->num_rows > 0) {
-    $stmt->bind_result($id, $hashedPassword);
-    $stmt->fetch();
-
-    if (password_verify($pass, $hashedPassword)) {
-        $_SESSION['user_id'] = $id;
-        header("Location: https://bouqs.com/");
-        exit();
+    if (empty($username) || empty($password)) {
+        $error = "Username and/or Password is required.";
     } else {
-        $message = "Invalid password.";
-    }
-} else {
-    $message = "No account found with that email or username.";
-}
-}
+        include "tools/db.php";
+        $dbConnection = getDBConnection();
 
-if (isset($_GET['registered']) && $_GET['registered'] == 1) {
-    echo "<script>alert('Registration successful! You can now log in.');</script>";
+        $statement = $dbConnection->prepare(
+            "SELECT id, email, password, createdAt FROM users WHERE username = ?"
+        );
+        $statement->bind_param('s', $username);
+        $statement->execute();
+        $statement->bind_result($id, $email, $stored_password, $createdAt);
+
+        if ($statement->fetch()) {
+            if (password_verify($password, $stored_password)) {
+                $_SESSION["id"] = $id;
+                $_SESSION["username"] = $username;
+                $_SESSION["email"] = $email;
+                $_SESSION["createdAt"] = $createdAt;
+
+                header("location: ./home.php");
+                exit;
+            }
+        }
+
+        $statement->close();
+
+        $error = "Username or Password Invalid";
+    }
 }
 ?>
 
