@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $dbConnection = getDBConnection();
 
         $statement = $dbConnection->prepare(
-            "SELECT id, email, password, createdAt FROM users WHERE username = ?"
+            "SELECT id, email, password, created_at FROM users WHERE username = ?"
         );
         $statement->bind_param('s', $username);
         $statement->execute();
