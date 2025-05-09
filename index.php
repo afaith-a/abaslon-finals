@@ -1,48 +1,79 @@
 <?php
-// Connect to Database
-$conn = new mysqli('sql312.infinityfree.com', 'if0_38929999', 'faithfaith19', 'if0_38929999_faiths');
+session_start();
 
-if ($conn->connect_error) {
-    die('Connection Failed: ' . $conn->connect_error);
-}
+$username = "";
+$email = "";
 
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitize Inputs
-    $username = $conn->real_escape_string($_POST['username']);
-    $email = $conn->real_escape_string($_POST['email']);
+$username_err = "";
+$email_err = "";
+$pass_err = "";
+$Cpass_err = "";
+
+$error = false;
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $username = $_POST['username'];  // Fixed: assign to $username
+    $email = $_POST['email'];
     $password = $_POST['password'];
-    $confirmPassword = $_POST['confirmPassword'];
+    $confirmed_pass = $_POST['Cpass'];
 
-    // Check if passwords match
-    if ($password != $confirmPassword) {
-        echo "<script>alert('Passwords do not match!');</script>";
-    } else {
-        // Check if email already exists
-        $checkEmail = "SELECT * FROM users WHERE email='$email'";
-        $result = $conn->query($checkEmail);
+    if (empty($username)) {
+        $username_err = "Username is required.";
+        $error = true;
+    }
 
-        if ($result->num_rows > 0) {
-            echo "<script>alert('Email already exists!');</script>";
-        } else {
-            // Hash the password
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $email_err = "Email format invalid.";
+        $error = true;
+    }
 
-            // Insert into database
-            $insert = "INSERT INTO users (username, email, password)
-                       VALUES ('$username', '$email', '$hashedPassword')";
+    include "tools/db.php";
+    $dbConnection = getDBConnection();
 
-            if ($conn->query($insert) === TRUE) {
-                header("Location: login.php?registered=1");
-                exit();
-            } else {
-                echo "<script>alert('Error: " . $conn->error . "');</script>";
-            }
-        }
+    $statement = $dbConnection->prepare("SELECT id FROM users WHERE email = ?");
+    $statement->bind_param("s", $email);
+    $statement->execute();
+    $statement->store_result();
+
+    if ($statement->num_rows > 0) {
+        $email_err = "Email already used.";
+        $error = true;
+    }
+
+    $statement->close();
+
+    if (strlen($password) < 6) {
+        $pass_err = "Password must be at least 6 characters.";
+        $error = true;
+    }
+
+    if ($confirmed_pass != $password) {
+        $Cpass_err = "Passwords do not match.";
+        $error = true;
+    }
+
+    if (!$error) {
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        $created_at = date('Y-m-d H:i:s');
+
+        $statement = $dbConnection->prepare(
+            "INSERT INTO users (username, email, password, createdAt) VALUES (?, ?, ?, ?)"
+        );
+        $statement->bind_param('ssss', $username, $email, $password, $created_at);
+        $statement->execute();
+        $insert_id = $statement->insert_id;
+        $statement->close();
+
+        $_SESSION["id"] = $insert_id;
+        $_SESSION["username"] = $username;
+        $_SESSION["email"] = $email;
+        $_SESSION["created_at"] = $created_at;
+
+        header("Location: login.php");
+        exit();
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
