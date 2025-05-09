@@ -95,9 +95,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input type="text" placeholder=" Enter Username" name="username" required>
                 </div>
                 <div class="input-box">
-                        <span class="details">Username</span>
-            <input type="text" name="username" required>
-
             <span class="details">Email</span>
             <input type="email" name="email" required>
 
