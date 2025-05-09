@@ -19,14 +19,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         );
         $statement->bind_param('s', $username);
         $statement->execute();
-        $statement->bind_result($id, $email, $stored_password, $createdAt);
+        $statement->bind_result($id, $email, $stored_password, $created_at);
 
         if ($statement->fetch()) {
             if (password_verify($password, $stored_password)) {
                 $_SESSION["id"] = $id;
                 $_SESSION["username"] = $username;
                 $_SESSION["email"] = $email;
-                $_SESSION["createdAt"] = $createdAt;
+                $_SESSION["created_at"] = $created_at;
 
                 header("location: ./home.php");
                 exit;
