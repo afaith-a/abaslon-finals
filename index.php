@@ -95,18 +95,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input type="text" placeholder=" Enter Username" name="username" required>
                 </div>
                 <div class="input-box">
-                        <span class="details">Email</span>
-                        <input type="email" placeholder=" Enter your Email Address" required name="email">
-                    </div>
-                    <div class="input-box">
-                        <span class="details">Password</span>
-                        <input type="password" placeholder=" Create your Password" required name="password">
-                    </div>
-    
-                    <div class="input-box">
-                        <span class="details">Confirm Password</span>
-                        <input type="password" placeholder=" Confirm your Password" required name="confirmPassword">
-                    </div>
+                        <label for="username">Username</label>
+            <input type="text" name="username" required>
+
+            <label for="email">Email</label>
+            <input type="email" name="email" required>
+
+            <label for="password">Password</label>
+            <input type="password" name="password" minlength="6" required>
+            
+            <label for="Cpass" class="label">Confirm Password</label>
+            <input type="password" id="Cpass" name="Cpass" class="textbox" placeholder="Re-enter password here" required>
+            <span style="color:red;"><?php echo $Cpass_err; ?></span><br><br>
             </div>
                 <div class="button">
                     <input type="submit" value="Register">
