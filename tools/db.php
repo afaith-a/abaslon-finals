@@ -1,15 +1,17 @@
 <?php
 function getDBConnection(){
 
-$host = 'sql312.infinityfree.com';
-$username = 'if0_38929999';  
-$password = 'faithfaith19';      
-$dbname = 'if0_38929999_faiths';
+$host = 'nozomi.proxy.rlwy.net';
+$port = 18630;
+$user = 'root';
+$password = 'EjrmcdKSZqZznVGpwZcFbvwUFhGqfurW';
+$dbname = 'railway';
 
-$conn = new mysqli($host, $username, $password, $dbname);
+// Create connection
+$connection = new mysqli($host, $user, $password, $dbname, $port);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if($connection->connect_error){
+    die("Error: Failed to connect to MySQL. ".$connection->connect_error);
 }
 
 return $connection;
