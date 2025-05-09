@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION["email"] = $email;
                 $_SESSION["created_at"] = $created_at;
 
-                header("location: ./home.php");
+                header("location: https://www.flowerchimp.com.ph");
                 exit;
             }
         }
