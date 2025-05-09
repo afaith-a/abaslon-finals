@@ -61,11 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="user-details">
                 <div class="input-box">
                     <span class="details">Email or Username</span>
-                    <input type="text" placeholder=" Enter your Email or Username" name="identifier" required>
+                    <input type="text" name="username" placeholder="Enter username" required />
                 </div>
                 <div class="input-box">
                     <span class="details">Password</span>
-                    <input type="password" placeholder=" Enter your Password" name="password" required>
+                    <input type="password" name="password" placeholder="Enter password" required />
                 </div>
             </div>
 
